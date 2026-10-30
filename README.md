@@ -2,8 +2,6 @@
 
 A status light for Claude Code in your MacBook's notch.
 
-DRAG notchy-demo.mp4 ONTO THIS LINE (then delete this text)
-
 **[Download Notchy for Mac](https://github.com/Sfontfr97/Notchy/releases/latest/download/Notchy.dmg)** · [Install and usage guide](https://sfontfr97.github.io/Notchy/) · macOS 14 or later
 
 - **Working:** a spinner, with what Claude is doing right now ("Editing Hero.tsx", "Reading 3 files"). Each project keeps its own color.
