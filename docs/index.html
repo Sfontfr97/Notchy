@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Notchy</title>
+<meta name="description" content="A status light for Claude Code in your MacBook's notch. A personal project, not affiliated with Anthropic.">
+<link rel="icon" href="icon.png">
+<style>
+/* One 720px reading column. The app's own colors: island black, amber for "needs you", green for "done". */
+:root{
+  --bg:#FFFFFF; --soft:#F4F5F7; --line:#E6E8EC;
+  --ink:#0B0B0C; --text:#33363B; --muted:#5C6068;
+  --link:#0F55D6; --btn:#0B0B0C; --on-btn:#FFFFFF;
+  --amber-text:#8A5300; --amber-soft:#FFF4E2;
+  --green-text:#12805C;
+  --font:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",system-ui,sans-serif;
+  --mono:ui-monospace,"SF Mono",Menlo,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0E1013; --soft:#171A1F; --line:#272B32;
+  --ink:#F3F4F6; --text:#D3D6DB; --muted:#A4A9B2;
+  --link:#8AB4FF; --btn:#F3F4F6; --on-btn:#0B0B0C;
+  --amber-text:#F5BC63; --amber-soft:#2E230F;
+  --green-text:#5FD3A6; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0E1013; --soft:#171A1F; --line:#272B32;
+  --ink:#F3F4F6; --text:#D3D6DB; --muted:#A4A9B2;
+  --link:#8AB4FF; --btn:#F3F4F6; --on-btn:#0B0B0C;
+  --amber-text:#F5BC63; --amber-soft:#2E230F;
+  --green-text:#5FD3A6; color-scheme:dark}
+
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font);font-size:17px;line-height:1.6;letter-spacing:-.005em;-webkit-font-smoothing:antialiased}
+a{color:var(--link);text-underline-offset:3px}
+a:focus-visible,button:focus-visible{outline:2px solid var(--link);outline-offset:3px;border-radius:6px}
+img,video{max-width:100%;height:auto;display:block}
+.wrap{max-width:720px;margin:0 auto;padding-inline:24px}
+@media (max-width:520px){.wrap{padding-inline:16px}}
+
+header{padding-block:72px 32px}
+.brand{display:flex;align-items:center;gap:16px}
+.brand img{width:72px;height:72px}
+h1{margin:0;font-size:48px;line-height:1.1;font-weight:700;letter-spacing:-.03em;color:var(--ink)}
+.lede{font-size:21px;line-height:1.5;color:var(--text);margin:20px 0 28px;max-width:34em;text-wrap:pretty}
+.cta{display:flex;flex-wrap:wrap;align-items:center;gap:14px 20px}
+.btn{display:inline-flex;align-items:center;gap:10px;height:46px;padding:0 22px;border-radius:999px;background:var(--btn);color:var(--on-btn);font-weight:600;font-size:16px;text-decoration:none}
+.btn:hover{opacity:.88}
+.cta small{font-size:14px;color:var(--muted)}
+
+.film{margin:40px 0 0;border-radius:18px;overflow:hidden;background:#0E1116;border:1px solid var(--line)}
+.film video{width:100%;height:auto;aspect-ratio:1920/1246}
+.film-note{font-size:14px;color:var(--muted);margin:10px 2px 0}
+
+main section{padding-block:44px;border-top:1px solid var(--line)}
+main section:first-child{border-top:0}
+h2{margin:0 0 16px;font-size:28px;line-height:1.2;font-weight:700;letter-spacing:-.02em;color:var(--ink);text-wrap:balance}
+h3{margin:0 0 4px;font-size:17px;font-weight:600;color:var(--ink)}
+p{margin:0 0 14px}
+.muted{color:var(--muted)}
+
+ol.steps{list-style:none;counter-reset:s;margin:0;padding:0;display:grid;gap:18px}
+ol.steps li{counter-increment:s;display:grid;grid-template-columns:32px minmax(0,1fr);gap:14px}
+ol.steps li::before{content:counter(s);width:32px;height:32px;border-radius:50%;background:var(--soft);color:var(--ink);font-weight:600;font-size:15px;display:grid;place-items:center}
+ol.steps p{margin:4px 0 0}
+.note{background:var(--amber-soft);border-radius:14px;padding:14px 18px;font-size:15.5px;margin-top:6px}
+.note b{color:var(--amber-text)}
+kbd{font-family:var(--font);font-size:14px;font-weight:600;padding:1px 7px;border-radius:6px;border:1px solid var(--line);background:var(--soft);color:var(--ink);white-space:nowrap}
+code{font-family:var(--mono);font-size:14.5px;background:var(--soft);padding:1px 6px;border-radius:5px;overflow-wrap:anywhere}
+
+.states{display:grid;gap:22px;margin-top:8px}
+.state{display:grid;gap:10px}
+.state img{width:100%;max-width:560px;border-radius:12px;border:1px solid var(--line)}
+.state p{margin:0}
+.shot{margin:20px 0 6px;max-width:560px}
+.shot img{border-radius:14px;border:1px solid var(--line)}
+
+dl.list{margin:0;display:grid;gap:14px}
+dl.list dt{font-weight:600;color:var(--ink)}
+dl.list dd{margin:2px 0 0}
+
+.indep{background:var(--soft);border-radius:18px;padding:26px 28px;margin-top:4px}
+.indep h2{font-size:22px;margin-bottom:10px}
+.indep p:last-child{margin-bottom:0}
+
+footer{border-top:1px solid var(--line);padding-block:28px 56px;font-size:14px;color:var(--muted)}
+footer p{margin:0 0 6px}
+@media (max-width:520px){h1{font-size:40px}.lede{font-size:19px}header{padding-block:48px 24px}.indep{padding:22px 20px}}
+@media (prefers-reduced-motion:reduce){.film video{display:none}.film .poster{display:block}}
+.film .poster{display:none}
+</style>
+</head>
+<body>
+<header class="wrap">
+  <div class="brand"><img src="icon.png" alt=""><h1>Notchy</h1></div>
+  <p class="lede">A status light for Claude Code in your MacBook's notch. See what every session is doing, answer its questions without switching windows, and know the moment it's done.</p>
+  <div class="cta">
+    <a class="btn" href="Notchy.dmg" download>Download for Mac</a>
+    <small>Version 0.1, 0.8 MB. macOS 14 or later, Apple silicon and Intel.<br>A personal project, <a href="#indep">not affiliated with Anthropic</a>.</small>
+  </div>
+  <figure class="film" style="margin-inline:0">
+    <video src="notchy-demo.mp4" autoplay muted loop playsinline controls aria-label="A 30 second demo of Notchy: sessions start, one asks for permission, and both finish"></video>
+    <img class="poster" src="island-4-open.png" alt="The open island with three chats: one needs your OK, one is working, one is done">
+  </figure>
+  <p class="film-note">30 second demo with sound. Made-up chats.</p>
+</header>
+
+<main class="wrap">
+  <section aria-labelledby="install">
+    <h2 id="install">Install</h2>
+    <ol class="steps">
+      <li><div><h3>Open the download</h3><p>Open <b>Notchy.dmg</b> and drag Notchy onto Applications. If you open it straight from the disk image, it offers to move itself.</p></div></li>
+      <li><div><h3>Open Notchy</h3><p>Start it from your Applications folder.</p>
+        <p class="note"><b>The first time,</b> macOS says it can't check Notchy for malware, because it isn't signed with an Apple Developer ID. Open System Settings, then Privacy &amp; Security, scroll down and click <b>Open Anyway</b>.</p></div></li>
+      <li><div><h3>Connect it to Claude Code</h3><p>Click <b>Connect and show me</b>. Notchy adds a few small hooks to <code>~/.claude/settings.json</code> and keeps a backup of the file next to it. Then it plays a short demo.</p></div></li>
+      <li><div><h3>Start a new chat</h3><p>Hooks load when a chat starts, so new chats show up in the notch from now on. This works for Claude Code in the Claude app and in the terminal.</p></div></li>
+    </ol>
+  </section>
+
+  <section aria-labelledby="states">
+    <h2 id="states">What the notch shows</h2>
+    <div class="states">
+      <div class="state"><img src="island-1-working.png" alt="Collapsed island with a spinner on the left and the number 1 on the right" width="560" height="64">
+        <p><b>Spinner:</b> Claude is working. Each project keeps its own spinner color. The number is how many chats are working.</p></div>
+      <div class="state"><img src="island-2-needs-you.png" alt="Collapsed island with an amber exclamation mark and the number 1 in amber" width="560" height="64">
+        <p><b>Amber "!":</b> a chat needs your OK. You hear a soft sound, and the island opens by itself for a few seconds.</p></div>
+      <div class="state"><img src="island-3-done.png" alt="Collapsed island with a green check and the word Done" width="560" height="64">
+        <p><b>Green check:</b> a chat is done. You hear a chime.</p></div>
+    </div>
+  </section>
+
+  <section aria-labelledby="use">
+    <h2 id="use">Everyday use</h2>
+    <p>Hover the notch, or press <kbd>Control</kbd> <kbd>Option</kbd> <kbd>N</kbd>, to open the island.</p>
+    <figure class="shot" style="margin-inline:0"><img src="island-4-open.png" alt="The open island: a chat asking to run npm test with Deny and Allow buttons, a chat editing Hero.tsx, a finished chat with its last line, and today's tally at the bottom" width="560" height="260"></figure>
+    <dl class="list">
+      <div><dt>See what Claude is doing</dt><dd>Each row shows the chat's title and what it's doing right now, like "Editing Hero.tsx" or "Reading 3 files".</dd></div>
+      <div><dt>Approve from the notch</dt><dd>When a chat asks permission, its row says what it wants, with <b>Allow</b> and <b>Deny</b>. Hover the line to read the full command first. If you're already in Claude when it asks, Notchy steps aside and you answer there as usual.</dd></div>
+      <div><dt>Know when it's done</dt><dd>A finished row shows Claude's last line, so you know if it's worth going back now.</dd></div>
+      <div><dt>Jump back</dt><dd>Click a row to open that exact chat in the Claude app. Terminal chats bring the terminal forward.</dd></div>
+      <div><dt>Keep it open</dt><dd>With the pointer on the island, swipe down with two fingers to pin it open. Swipe up to close it.</dd></div>
+      <div><dt>Your day</dt><dd>The bottom of the island shows how long Claude worked today and how many tasks it finished.</dd></div>
+    </dl>
+  </section>
+
+  <section aria-labelledby="settings">
+    <h2 id="settings">Settings</h2>
+    <p>Open the island and click <b>⋯</b> in its top right corner. The same menu is in the menu bar icon, when your menu bar has room for it.</p>
+    <dl class="list">
+      <div><dt>Sounds</dt><dd>One for "needs you" and one for "done". Hover a sound to hear it, click to choose it, or pick None.</dd></div>
+      <div><dt>Quiet during calls</dt><dd>No sounds while your microphone is in use. The island still opens.</dd></div>
+      <div><dt>Remind me after 5 minutes</dt><dd>One more nudge if a chat is still waiting for you.</dd></div>
+      <div><dt>Keep Mac awake while Claude works</dt><dd>Stops the Mac from going to sleep in the middle of a task.</dd></div>
+      <div><dt>Show on all displays</dt><dd>An island at the top of every screen, so it also works with the lid closed on a monitor.</dd></div>
+      <div><dt>Open at login</dt><dd>Starts Notchy when you log in.</dd></div>
+    </dl>
+  </section>
+
+  <section aria-labelledby="help">
+    <h2 id="help">If something looks wrong</h2>
+    <dl class="list">
+      <div><dt>A chat is stuck in the list</dt><dd>Hover its row and click the ×, or choose <b>Clear finished sessions</b> or <b>Clear all sessions</b> in the menu. Chats that stay silent for 10 minutes clear by themselves.</dd></div>
+      <div><dt>Rows say "Working" but not what Claude is doing</dt><dd>Choose <b>Update Claude Code connection…</b> in the menu, then start a new chat.</dd></div>
+      <div><dt>Notchy seems frozen</dt><dd>Choose <b>Restart Notchy</b> in the menu.</dd></div>
+      <div><dt>Notchy closed</dt><dd>The next prompt you send to Claude opens it again. If you quit it on purpose, it stays closed until you open it.</dd></div>
+    </dl>
+  </section>
+
+  <section aria-labelledby="privacy">
+    <h2 id="privacy">Privacy</h2>
+    <p>Everything stays on your Mac. Notchy has no account, sends nothing over the network and uses no Claude tokens. It reads the events Claude Code passes to its hooks, and the Claude app's local session list to show chat titles and open the right chat.</p>
+  </section>
+
+  <section aria-labelledby="remove">
+    <h2 id="remove">Remove Notchy</h2>
+    <p>Quit it from the menu and delete it from Applications. To put your Claude Code settings back exactly as they were, restore <code>~/.claude/settings.json.notchy-backup</code>. Its hooks do nothing once the app is gone.</p>
+  </section>
+
+  <section aria-labelledby="indep">
+    <div class="indep">
+      <h2 id="indep">An independent, personal project</h2>
+      <p>Notchy is a personal tool I built for my own work, and I'm sharing it in case it helps others. It is not made, endorsed, reviewed or supported by Anthropic, and it isn't an official part of Claude or Claude Code.</p>
+      <p>Claude and Claude Code are trademarks of Anthropic, used here only to say what Notchy works with. Notchy relies on Claude Code's public hooks and on how the Claude app stores its sessions on your Mac. A future Claude update could change that, so some features may stop working until Notchy is updated.</p>
+      <p>Please don't contact Anthropic support about Notchy. Questions and feedback come to me.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="wrap">
+  <p>Designed and built by Sergi Font, Product Designer, with Claude Code.</p>
+  <p>Notchy is provided as is, with no warranty.</p>
+</footer>
+</body>
+</html>
