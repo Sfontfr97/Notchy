@@ -2,7 +2,9 @@
 
 A status light for Claude Code in your MacBook's notch.
 
-![The open island: a chat asking to run npm test with Deny and Allow, a chat editing Hero.tsx, a finished chat with its last line](docs/island-4-open.png)
+DRAG notchy-demo.mp4 ONTO THIS LINE (then delete this text)
+
+**[Download Notchy for Mac](https://github.com/Sfontfr97/Notchy/releases/latest/download/Notchy.dmg)** · [Install and usage guide](https://sfontfr97.github.io/Notchy/) · macOS 14 or later
 
 - **Working:** a spinner, with what Claude is doing right now ("Editing Hero.tsx", "Reading 3 files"). Each project keeps its own color.
 - **Needs you:** an amber "!" and a soft sound. **Allow** or **Deny** right from the notch.
@@ -12,21 +14,21 @@ A status light for Claude Code in your MacBook's notch.
 
 Everything stays on your Mac. No account, no network, no Claude tokens.
 
-[Watch the 30 second demo](docs/notchy-demo.mp4) · [Install and usage guide](docs/index.html)
+![The open island: a chat asking to run npm test with Deny and Allow, a chat editing Hero.tsx, a finished chat with its last line](docs/island-4-open.png)
 
 > Notchy is an independent, personal project. It is not made, endorsed or supported by Anthropic. Claude and Claude Code are trademarks of Anthropic, used here only to say what Notchy works with.
 
 ## Install
 
-1. Download **Notchy.dmg** from the [latest release](../../releases/latest).
+1. Download **Notchy.dmg** from the [latest release](https://github.com/Sfontfr97/Notchy/releases/latest).
 2. Open it and drag Notchy onto Applications.
 3. Open Notchy. The first time, macOS says it can't check the app, because it isn't signed with an Apple Developer ID. Open **System Settings, Privacy & Security**, scroll down and click **Open Anyway**.
 4. Click **Connect and show me**. Notchy adds a few small hooks to `~/.claude/settings.json` and saves a backup next to it.
 5. Start a new Claude Code chat. It shows up in the notch.
 
-macOS 14 or later, Apple silicon and Intel. On a Mac without a notch, it sits in the middle of the menu bar.
+Apple silicon and Intel. On a Mac without a notch, it sits in the middle of the menu bar.
 
-The full guide (everyday use, settings, troubleshooting, privacy, removing it) is in [docs/index.html](docs/index.html).
+The [full guide](https://sfontfr97.github.io/Notchy/) covers everyday use, settings, troubleshooting, privacy and removing Notchy.
 
 ## Build it yourself
 
